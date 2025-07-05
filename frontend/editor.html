@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>WritePad</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://kit.fontawesome.com/e3f8c39ee9.js" crossorigin="anonymous"></script>
+</head>
+<body class="min-h-screen bg-gradient-to-t from-[#d7abc3] via-[#a597e4] to-[#43adfc]">
+
+  <div id="editor" class="min-h-screen border-gray-600 bg-white mt-28 ml-52 mr-52 rounded-lg flex flex-col">
+    <!-- 🔠 Header -->
+    <div id="header" class="flex justify-center font-bold bg-gray-600 text-white text-xl rounded-t-md pt-2 pb-2">
+      Editor
+    </div>
+
+<!-- 🧭 Menu Bar -->
+<div id="menuBar" class="flex space-x-6 px-4 py-2 bg-gray-100 border-b border-gray-300 text-sm font-semibold text-gray-800">
+  <!-- File -->
+  <div class="relative">
+    <div id="fileBtn" class="menu-button cursor-pointer hover:bg-gray-300 px-2 py-1 rounded flex items-center space-x-1">
+      <span>File</span>
+      <i class="fas fa-caret-down text-xs"></i>
+    </div>
+    <div id="fileDropdown" class="dropdown-menu absolute mt-1 bg-white border rounded shadow text-sm w-48 hidden z-50">
+      <div class="px-3 py-2 hover:bg-gray-100 cursor-pointer flex items-center space-x-2"><i class="fas fa-file"></i><span>New document</span></div>
+      <div class="px-3 py-2 hover:bg-gray-100 cursor-pointer flex justify-between items-center">
+        <div class="flex items-center space-x-2"><i class="fas fa-save"></i><span>Save</span></div><span class="text-gray-400">Ctrl+S</span>
+      </div>
+      <div class="px-3 py-2 hover:bg-gray-100 cursor-pointer flex justify-between items-center">
+        <div class="flex items-center space-x-2"><i class="fas fa-search"></i><span>Open...</span></div><span class="text-gray-400">Ctrl+O</span>
+      </div>
+      <div class="px-3 py-2 hover:bg-gray-100 cursor-pointer flex justify-between items-center">
+        <div class="flex items-center space-x-2"><i class="fas fa-print"></i><span>Print</span></div><span class="text-gray-400">Ctrl+P</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Edit -->
+  <div class="relative">
+    <div id="editBtn" class="menu-button cursor-pointer hover:bg-gray-300 px-2 py-1 rounded flex items-center space-x-1">
+      <span>Edit</span>
+      <i class="fas fa-caret-down text-xs"></i>
+    </div>
+    <div id="editDropdown" class="dropdown-menu absolute mt-1 bg-white border rounded shadow text-sm w-52 hidden z-50">
+      <div class="px-3 py-2 hover:bg-gray-100 cursor-pointer flex items-center space-x-2"><i class="fas fa-undo"></i><span>Undo</span></div>
+      <div class="px-3 py-2 hover:bg-gray-100 cursor-pointer flex items-center space-x-2"><i class="fas fa-redo"></i><span>Redo</span></div>
+      <div class="px-3 py-2 hover:bg-gray-100 cursor-pointer flex items-center space-x-2"><i class="fas fa-cut"></i><span>Cut</span></div>
+      <div class="px-3 py-2 hover:bg-gray-100 cursor-pointer flex items-center space-x-2"><i class="fas fa-copy"></i><span>Copy</span></div>
+      <div class="px-3 py-2 hover:bg-gray-100 cursor-pointer flex items-center space-x-2"><i class="fas fa-paste"></i><span>Paste</span></div>
+      <div class="px-3 py-2 hover:bg-gray-100 cursor-pointer flex items-center space-x-2"><i class="fas fa-i-cursor"></i><span>Select All</span></div>
+      <div class="px-3 py-2 hover:bg-gray-100 cursor-pointer flex items-center space-x-2"><i class="fas fa-search"></i><span>Find and Replace</span></div>
+    </div>
+  </div>
+
+  <!-- Insert -->
+  <div class="relative">
+    <div id="insertBtn" class="menu-button cursor-pointer hover:bg-gray-300 px-2 py-1 rounded flex items-center space-x-1">
+      <span>Insert</span>
+      <i class="fas fa-caret-down text-xs"></i>
+    </div>
+    <div id="insertDropdown" class="dropdown-menu absolute mt-1 bg-white border rounded shadow text-sm w-52 hidden z-50">
+      <div class="px-3 py-2 hover:bg-gray-100 cursor-pointer flex items-center space-x-2"><i class="fas fa-calendar-alt"></i><span>Date/Time</span></div>
+      <div class="px-3 py-2 hover:bg-gray-100 cursor-pointer flex items-center space-x-2"><i class="fas fa-asterisk"></i><span>Special Character</span></div>
+    </div>
+  </div>
+
+  <!-- View -->
+  <div class="relative">
+    <div id="viewBtn" class="menu-button cursor-pointer hover:bg-gray-300 px-2 py-1 rounded flex items-center space-x-1">
+      <span>View</span>
+      <i class="fas fa-caret-down text-xs"></i>
+    </div>
+    <div id="viewDropdown" class="dropdown-menu absolute mt-1 bg-white border rounded shadow text-sm w-52 hidden z-50">
+      <div class="px-3 py-2 hover:bg-gray-100 cursor-pointer flex justify-between items-center">
+        <span>Fullscreen</span>
+        <span class="text-gray-400 ml-auto">Ctrl+Shift+F</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Help -->
+  <div class="relative">
+    <div id="helpBtn" class="menu-button cursor-pointer hover:bg-gray-300 px-2 py-1 rounded flex items-center space-x-1">
+      <span>Help</span>
+      <i class="fas fa-caret-down text-xs"></i>
+    </div>
+    <div id="helpDropdown" class="dropdown-menu absolute mt-1 bg-white border rounded shadow text-sm w-52 hidden z-50">
+      <div class="px-3 py-2 hover:bg-gray-100 cursor-pointer flex items-center space-x-2"><i class="fas fa-keyboard"></i><span>Shortcuts</span></div>
+      <div class="px-3 py-2 hover:bg-gray-100 cursor-pointer flex items-center space-x-2"><i class="fas fa-home"></i><span>Homepage</span></div>
+    </div>
+  </div>
+</div>
+
+
+
+
+        <!-- 🔧 Toolbar -->
+    <div id="icons" class="flex items-center bg-gray-100 border px-2 py-1 space-x-2 text-gray-700 text-sm">
+    <div class="px-3 py-1 rounded cursor-pointer hover:bg-gray-300 hover:text-gray-800 transition"><i class="fas fa-file"></i></div>
+    <div class="px-3 py-1 rounded cursor-pointer hover:bg-gray-300 hover:text-gray-800 transition"><i class="fas fa-search"></i></div>
+    <div class="px-3 py-1 rounded cursor-pointer hover:bg-gray-300 hover:text-gray-800 transition"><i class="fas fa-save"></i></div>
+    <div class="px-3 py-1 rounded cursor-pointer hover:bg-gray-300 hover:text-gray-800 transition"><i class="fas fa-print"></i></div>
+    <div class="px-3 py-1 rounded cursor-pointer hover:bg-gray-300 hover:text-gray-800 transition"><i class="fas fa-cut"></i></div>
+    <div class="px-3 py-1 rounded cursor-pointer hover:bg-gray-300 hover:text-gray-800 transition"><i class="fas fa-copy"></i></div>
+    <div class="px-3 py-1 rounded text-gray-400 cursor-not-allowed"><i class="fas fa-undo"></i></div>
+    <div class="px-3 py-1 rounded text-gray-400 cursor-not-allowed"><i class="fas fa-redo"></i></div>
+    <div class="border-l h-5 mx-2"></div>
+    <div class="px-3 py-1 rounded cursor-pointer hover:bg-gray-300 hover:text-gray-800 transition"><i class="fas fa-highlighter"></i></div>
+    <div class="flex items-center space-x-1 px-3 py-1 rounded cursor-pointer hover:bg-gray-300 hover:text-gray-800 transition">
+        <span>Font Family</span>
+        <i class="fas fa-caret-down text-xs"></i>
+    </div>
+    <div class="flex items-center space-x-1 px-3 py-1 rounded cursor-pointer hover:bg-gray-300 hover:text-gray-800 transition">
+        <span>Font Sizes</span>
+        <i class="fas fa-caret-down text-xs"></i>
+    </div>
+    <div class="px-3 py-1 rounded cursor-pointer hover:bg-gray-300 hover:text-gray-800 transition"><i class="fas fa-expand-arrows-alt"></i></div>
+    </div>
+
+
+    <!-- 📝 Editable Area -->
+    <textarea id="textInput"
+      class="flex-1 p-4 outline-none resize-none text-gray-800 text-base font-sans"
+      placeholder="Start typing your document here..."></textarea>
+
+    <!-- 📊 Footer with word and line count -->
+    <div id="footer" class="h-10 flex items-center space-x-4 bg-gray-100 border-t border-gray-300 px-4 text-sm text-gray-700">
+      <div id="lineCount">Lines: 0</div>
+      <div id="wordCount">Words: 0</div>
+    </div>
+
+  </div>
+
+  <!-- External JS -->
+  <script src="editor.js"></script>
+</body>
+</html>
