@@ -62,3 +62,50 @@ textInput.addEventListener('input', () => {
   lineCount.textContent = `Lines: ${text ? lines : 0}`;
   wordCount.textContent = `Words: ${text ? words : 0}`;
 });
+
+// ✅ Clear document on New Document click
+function clearDocument() {
+  textInput.value = '';
+  lineCount.textContent = 'Lines: 0';
+  wordCount.textContent = 'Words: 0';
+  textInput.focus();
+}
+
+document.getElementById('newDocBtn').addEventListener('click', clearDocument);
+document.getElementById('toolbarNewDoc').addEventListener('click', clearDocument);
+
+function copyToClipboard() {
+  const text = textInput.value;
+  if (!text) return;
+
+  // Use Clipboard API
+  navigator.clipboard.writeText(text).then(() => {
+    showCopyMessage(); // ✨ Show floating message
+  }).catch(err => {
+    console.error('Copy failed:', err);
+  });
+}
+
+document.getElementById('copyBtn').addEventListener('click', copyToClipboard);
+document.getElementById('toolbarCopy').addEventListener('click', copyToClipboard);
+
+function copyToClipboard() {
+  const text = textInput.value;
+  if (!text) return;
+
+  navigator.clipboard.writeText(text).then(() => {
+    showCopyMessage();
+  }).catch(err => {
+    console.error('Copy failed:', err);
+  });
+}
+
+function showCopyMessage() {
+  const messageBox = document.getElementById('copyMessage');
+  messageBox.classList.remove('hidden');
+
+  setTimeout(() => {
+    messageBox.classList.add('hidden');
+  }, 1000); // Hide after 1 second
+}
+
