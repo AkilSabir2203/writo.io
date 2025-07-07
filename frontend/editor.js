@@ -89,17 +89,6 @@ function copyToClipboard() {
 document.getElementById('copyBtn').addEventListener('click', copyToClipboard);
 document.getElementById('toolbarCopy').addEventListener('click', copyToClipboard);
 
-function copyToClipboard() {
-  const text = textInput.value;
-  if (!text) return;
-
-  navigator.clipboard.writeText(text).then(() => {
-    showCopyMessage();
-  }).catch(err => {
-    console.error('Copy failed:', err);
-  });
-}
-
 function showCopyMessage() {
   const messageBox = document.getElementById('copyMessage');
   messageBox.classList.remove('hidden');
@@ -109,3 +98,70 @@ function showCopyMessage() {
   }, 1000); // Hide after 1 second
 }
 
+function cutSelectedText() {
+  const start = textInput.selectionStart;
+  const end = textInput.selectionEnd;
+
+  if (start === end) return; // No text selected
+
+  const selectedText = textInput.value.slice(start, end);
+
+  // Copy to clipboard
+  navigator.clipboard.writeText(selectedText).then(() => {
+    // Remove selected text
+    textInput.setRangeText('', start, end, 'start');
+    textInput.dispatchEvent(new Event('input')); // Update word/line count
+  }).catch(err => {
+    console.error('Cut failed:', err);
+  });
+}
+
+// Add event listeners
+document.getElementById('cutBtn').addEventListener('click', cutSelectedText);
+document.getElementById('toolbarCut').addEventListener('click', cutSelectedText);
+
+const fileInput = document.getElementById('fileInput');
+
+// Trigger file input when "Open..." is clicked
+document.querySelectorAll('.openFileBtn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    fileInput.click();
+  });
+});
+
+// Read file content and load into textarea
+fileInput.addEventListener('change', () => {
+  const file = fileInput.files[0];
+  if (file && file.name.endsWith('.txt')) {
+    const reader = new FileReader();
+    reader.onload = function (e) {
+      textInput.value = e.target.result;
+      textInput.dispatchEvent(new Event('input')); // Update counts
+    };
+    reader.readAsText(file);
+  } else {
+    alert('Please select a .txt file');
+  }
+});
+
+//Undo
+function undoEdit() {
+  const textarea = document.getElementById('textInput');
+  textarea.focus();
+  document.execCommand('undo');
+  textarea.dispatchEvent(new Event('input')); // update counters
+}
+
+document.getElementById('undoBtn').addEventListener('click', undoEdit);
+document.getElementById('redoBtn').addEventListener('click', redoEdit);
+
+//Redo
+function redoEdit() {
+  const textarea = document.getElementById('textInput');
+  textarea.focus();
+  document.execCommand('redo');
+  textarea.dispatchEvent(new Event('input')); // update counters
+}
+
+document.getElementById('toolbarUndo').addEventListener('click', undoEdit);
+document.getElementById('toolbarRedo').addEventListener('click', redoEdit);

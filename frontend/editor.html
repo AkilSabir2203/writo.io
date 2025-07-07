@@ -28,8 +28,8 @@
       <div class="px-3 py-2 hover:bg-gray-100 cursor-pointer flex justify-between items-center">
         <div class="flex items-center space-x-2"><i class="fas fa-save"></i><span>Save</span></div><span class="text-gray-400">Ctrl+S</span>
       </div>
-      <div class="px-3 py-2 hover:bg-gray-100 cursor-pointer flex justify-between items-center">
-        <div class="flex items-center space-x-2"><i class="fas fa-search"></i><span>Open...</span></div><span class="text-gray-400">Ctrl+O</span>
+      <div class="openFileBtn px-3 py-2 hover:bg-gray-100 cursor-pointer flex justify-between items-center">
+        <div class="flex items-center space-x-2"><i class="fas fa-folder-open"></i><span>Open...</span></div><span class="text-gray-400">Ctrl+O</span>
       </div>
       <div class="px-3 py-2 hover:bg-gray-100 cursor-pointer flex justify-between items-center">
         <div class="flex items-center space-x-2"><i class="fas fa-print"></i><span>Print</span></div><span class="text-gray-400">Ctrl+P</span>
@@ -44,9 +44,9 @@
       <i class="fas fa-caret-down text-xs"></i>
     </div>
     <div id="editDropdown" class="dropdown-menu absolute mt-1 bg-white border rounded shadow text-sm w-52 hidden z-50">
-      <div class="px-3 py-2 hover:bg-gray-100 cursor-pointer flex items-center space-x-2"><i class="fas fa-undo"></i><span>Undo</span></div>
-      <div class="px-3 py-2 hover:bg-gray-100 cursor-pointer flex items-center space-x-2"><i class="fas fa-redo"></i><span>Redo</span></div>
-      <div class="px-3 py-2 hover:bg-gray-100 cursor-pointer flex items-center space-x-2"><i class="fas fa-cut"></i><span>Cut</span></div>
+      <div id="undoBtn" class="px-3 py-2 hover:bg-gray-100 cursor-pointer flex items-center space-x-2"><i class="fas fa-undo"></i><span>Undo</span></div>
+      <div id="redoBtn" class="px-3 py-2 hover:bg-gray-100 cursor-pointer flex items-center space-x-2"><i class="fas fa-redo"></i><span>Redo</span></div>
+      <div id="cutBtn" class="px-3 py-2 hover:bg-gray-100 cursor-pointer flex items-center space-x-2"><i class="fas fa-cut"></i><span>Cut</span></div>
       <div id="copyBtn" class="px-3 py-2 hover:bg-gray-100 cursor-pointer flex items-center space-x-2"><i class="fas fa-copy"></i><span>Copy</span></div>
       <div class="px-3 py-2 hover:bg-gray-100 cursor-pointer flex items-center space-x-2"><i class="fas fa-paste"></i><span>Paste</span></div>
       <div class="px-3 py-2 hover:bg-gray-100 cursor-pointer flex items-center space-x-2"><i class="fas fa-i-cursor"></i><span>Select All</span></div>
@@ -99,13 +99,13 @@
         <!-- 🔧 Toolbar -->
     <div id="icons" class="flex items-center bg-gray-100 border px-2 py-1 space-x-2 text-gray-700 text-sm">
     <div id="toolbarNewDoc" class="px-3 py-1 rounded cursor-pointer hover:bg-gray-300 hover:text-gray-800 transition"><i class="fas fa-file"></i></div>
-    <div class="px-3 py-1 rounded cursor-pointer hover:bg-gray-300 hover:text-gray-800 transition"><i class="fas fa-search"></i></div>
+    <div class="openFileBtn px-3 py-1 rounded cursor-pointer hover:bg-gray-300 hover:text-gray-800 transition"><i class="fas fa-folder-open"></i></div>
     <div class="px-3 py-1 rounded cursor-pointer hover:bg-gray-300 hover:text-gray-800 transition"><i class="fas fa-save"></i></div>
     <div class="px-3 py-1 rounded cursor-pointer hover:bg-gray-300 hover:text-gray-800 transition"><i class="fas fa-print"></i></div>
-    <div class="px-3 py-1 rounded cursor-pointer hover:bg-gray-300 hover:text-gray-800 transition"><i class="fas fa-cut"></i></div>
+    <div id="toolbarCut" class="px-3 py-1 rounded cursor-pointer hover:bg-gray-300 hover:text-gray-800 transition"><i class="fas fa-cut"></i></div>
     <div id="toolbarCopy" class="px-3 py-1 rounded cursor-pointer hover:bg-gray-300 hover:text-gray-800 transition"><i class="fas fa-copy"></i></div>
-    <div class="px-3 py-1 rounded text-gray-400 cursor-not-allowed"><i class="fas fa-undo"></i></div>
-    <div class="px-3 py-1 rounded text-gray-400 cursor-not-allowed"><i class="fas fa-redo"></i></div>
+    <div id="toolbarUndo" class="px-3 py-1 rounded text-gray-500 cursor-pointer"><i class="fas fa-undo"></i></div>
+    <div id="toolbarRedo" class="px-3 py-1 rounded text-gray-500 cursor-pointer"><i class="fas fa-redo"></i></div>
     <div class="border-l h-5 mx-2"></div>
     <div class="px-3 py-1 rounded cursor-pointer hover:bg-gray-300 hover:text-gray-800 transition"><i class="fas fa-highlighter"></i></div>
     <div class="flex items-center space-x-1 px-3 py-1 rounded cursor-pointer hover:bg-gray-300 hover:text-gray-800 transition">
@@ -130,6 +130,9 @@
       <div id="lineCount">Lines: 0</div>
       <div id="wordCount">Words: 0</div>
     </div>
+  
+  <!-- open file -->
+  <input type="file" id="fileInput" accept=".txt" class="hidden" />
 
   </div>
   <div id="copyMessage" class="fixed top-2/3 left-1/2 transform -translate-x-1/2 -translate-y-1/2 
