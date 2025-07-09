@@ -165,3 +165,70 @@ function redoEdit() {
 
 document.getElementById('toolbarUndo').addEventListener('click', undoEdit);
 document.getElementById('toolbarRedo').addEventListener('click', redoEdit);
+
+function printEditorContent() {
+  const content = document.getElementById('textInput').value;
+  const printWindow = window.open('', '_blank');
+
+  printWindow.document.write(`
+    <html>
+      <head>
+        <title>Print Document</title>
+        <style>
+          body {
+            font-family: Arial, sans-serif;
+            padding: 40px;
+            white-space: pre-wrap;
+          }
+        </style>
+      </head>
+      <body>${content.replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\n/g, '<br>')}</body>
+    </html>
+  `);
+
+  printWindow.document.close();
+  printWindow.focus();
+  printWindow.print();
+  printWindow.close();
+}
+
+// Attach events
+document.getElementById('printBtn').addEventListener('click', printEditorContent);
+document.getElementById('toolbarPrint').addEventListener('click', printEditorContent);
+
+function openFindReplaceDialog() {
+  const findText = prompt('Enter the word to find:');
+  if (!findText) return;
+
+  const replaceText = prompt(`Replace "${findText}" with:`);
+  if (replaceText === null) return;
+
+  const editor = document.getElementById('textInput');
+  const content = editor.value;
+
+  // Use a global, case-insensitive RegExp to replace all matches
+  const regex = new RegExp(findText, 'gi');
+  const newContent = content.replace(regex, replaceText);
+
+  editor.value = newContent;
+
+  // Trigger input event to update line/word count
+  editor.dispatchEvent(new Event('input'));
+}
+
+
+document.getElementById('editFindReplace').addEventListener('click', openFindReplaceDialog);
+document.getElementById('findReplaceBtn').addEventListener('click', openFindReplaceDialog);
+
+document.getElementById('fontFamilyDropdown').addEventListener('change', function () {
+  const selectedFont = this.value;
+  document.getElementById('textInput').style.fontFamily = selectedFont;
+});
+
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('textInput').style.fontFamily = 'Arial';
+});
+
+
+
+

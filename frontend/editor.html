@@ -31,7 +31,7 @@
       <div class="openFileBtn px-3 py-2 hover:bg-gray-100 cursor-pointer flex justify-between items-center">
         <div class="flex items-center space-x-2"><i class="fas fa-folder-open"></i><span>Open...</span></div><span class="text-gray-400">Ctrl+O</span>
       </div>
-      <div class="px-3 py-2 hover:bg-gray-100 cursor-pointer flex justify-between items-center">
+      <div id="printBtn" class="px-3 py-2 hover:bg-gray-100 cursor-pointer flex justify-between items-center">
         <div class="flex items-center space-x-2"><i class="fas fa-print"></i><span>Print</span></div><span class="text-gray-400">Ctrl+P</span>
       </div>
     </div>
@@ -50,7 +50,7 @@
       <div id="copyBtn" class="px-3 py-2 hover:bg-gray-100 cursor-pointer flex items-center space-x-2"><i class="fas fa-copy"></i><span>Copy</span></div>
       <div class="px-3 py-2 hover:bg-gray-100 cursor-pointer flex items-center space-x-2"><i class="fas fa-paste"></i><span>Paste</span></div>
       <div class="px-3 py-2 hover:bg-gray-100 cursor-pointer flex items-center space-x-2"><i class="fas fa-i-cursor"></i><span>Select All</span></div>
-      <div class="px-3 py-2 hover:bg-gray-100 cursor-pointer flex items-center space-x-2"><i class="fas fa-search"></i><span>Find and Replace</span></div>
+      <div id="editFindReplace" class="px-3 py-2 hover:bg-gray-100 cursor-pointer flex items-center space-x-2"><i class="fas fa-search"></i><span>Find and Replace</span></div>
     </div>
   </div>
 
@@ -101,19 +101,31 @@
     <div id="toolbarNewDoc" class="px-3 py-1 rounded cursor-pointer hover:bg-gray-300 hover:text-gray-800 transition"><i class="fas fa-file"></i></div>
     <div class="openFileBtn px-3 py-1 rounded cursor-pointer hover:bg-gray-300 hover:text-gray-800 transition"><i class="fas fa-folder-open"></i></div>
     <div class="px-3 py-1 rounded cursor-pointer hover:bg-gray-300 hover:text-gray-800 transition"><i class="fas fa-save"></i></div>
-    <div class="px-3 py-1 rounded cursor-pointer hover:bg-gray-300 hover:text-gray-800 transition"><i class="fas fa-print"></i></div>
+    <div id="toolbarPrint"class="px-3 py-1 rounded cursor-pointer hover:bg-gray-300 hover:text-gray-800 transition"><i class="fas fa-print"></i></div>
     <div id="toolbarCut" class="px-3 py-1 rounded cursor-pointer hover:bg-gray-300 hover:text-gray-800 transition"><i class="fas fa-cut"></i></div>
     <div id="toolbarCopy" class="px-3 py-1 rounded cursor-pointer hover:bg-gray-300 hover:text-gray-800 transition"><i class="fas fa-copy"></i></div>
     <div id="toolbarUndo" class="px-3 py-1 rounded text-gray-500 cursor-pointer"><i class="fas fa-undo"></i></div>
     <div id="toolbarRedo" class="px-3 py-1 rounded text-gray-500 cursor-pointer"><i class="fas fa-redo"></i></div>
     <div class="border-l h-5 mx-2"></div>
-    <div class="px-3 py-1 rounded cursor-pointer hover:bg-gray-300 hover:text-gray-800 transition"><i class="fas fa-highlighter"></i></div>
-    <div class="flex items-center space-x-1 px-3 py-1 rounded cursor-pointer hover:bg-gray-300 hover:text-gray-800 transition">
-        <span>Font Family</span>
-        <i class="fas fa-caret-down text-xs"></i>
+    <div id="findReplaceBtn" class="px-3 py-1 rounded cursor-pointer hover:bg-gray-300 hover:text-gray-800 transition"><i class="fas fa-search"></i></div>
+    
+    <!-- Font Family Dropdown -->
+    <div class="flex items-center space-x-2 px-3 py-1">
+      <span class="text-sm text-gray-700">Font:</span>
+      <select id="fontFamilyDropdown" class="px-2 py-1 rounded border border-gray-300 bg-white text-sm text-gray-800 focus:outline-none">
+        <option value="Arial" selected>Arial</option>
+        <option value="'Times New Roman', serif">Times New Roman</option>
+        <option value="Georgia, serif">Georgia</option>
+        <option value="'Courier New', monospace">Courier New</option>
+        <option value="'Lucida Console', monospace">Lucida Console</option>
+        <option value="Verdana, sans-serif">Verdana</option>
+        <option value="Tahoma, sans-serif">Tahoma</option>
+        <option value="'Comic Sans MS', cursive">Comic Sans MS</option>
+      </select>
     </div>
+
     <div class="flex items-center space-x-1 px-3 py-1 rounded cursor-pointer hover:bg-gray-300 hover:text-gray-800 transition">
-        <span>Font Sizes</span>
+        <span>Font Size</span>
         <i class="fas fa-caret-down text-xs"></i>
     </div>
     <div class="px-3 py-1 rounded cursor-pointer hover:bg-gray-300 hover:text-gray-800 transition"><i class="fas fa-expand-arrows-alt"></i></div>
