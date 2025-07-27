@@ -80,6 +80,42 @@
     </div>
   </div>
 
+    <!-- AI Assistant -->
+  <div class="relative">
+    <div id="aiBtn" class="menu-button cursor-pointer hover:bg-gray-300 px-2 py-1 rounded flex items-center space-x-1">
+      <span>AI Assistant</span>
+      <i class="fas fa-caret-down text-xs"></i>
+    </div>
+    <div id="aiDropdown" class="dropdown-menu absolute mt-1 bg-white border rounded shadow text-sm w-60 hidden z-50">
+      <div id="aiGenerate" class="px-3 py-2 hover:bg-gray-100 cursor-pointer flex items-center space-x-2">
+        <i class="fas fa-magic text-purple-600"></i><span>Generate Text</span>
+      </div>
+      <div class="border-t border-gray-200"></div>
+      <div id="aiImproveGeneral" class="px-3 py-2 hover:bg-gray-100 cursor-pointer flex items-center space-x-2">
+        <i class="fas fa-edit text-blue-600"></i><span>Improve Text</span>
+      </div>
+      <div id="aiImproveGrammar" class="px-3 py-2 hover:bg-gray-100 cursor-pointer flex items-center space-x-2">
+        <i class="fas fa-spell-check text-green-600"></i><span>Fix Grammar</span>
+      </div>
+      <div id="aiImproveProfessional" class="px-3 py-2 hover:bg-gray-100 cursor-pointer flex items-center space-x-2">
+        <i class="fas fa-user-tie text-indigo-600"></i><span>Make Professional</span>
+      </div>
+      <div id="aiImproveCasual" class="px-3 py-2 hover:bg-gray-100 cursor-pointer flex items-center space-x-2">
+        <i class="fas fa-smile text-yellow-600"></i><span>Make Casual</span>
+      </div>
+      <div class="border-t border-gray-200"></div>
+      <div id="aiSummarize" class="px-3 py-2 hover:bg-gray-100 cursor-pointer flex items-center space-x-2">
+        <i class="fas fa-compress-alt text-orange-600"></i><span>Summarize</span>
+      </div>
+      <div id="aiTranslate" class="px-3 py-2 hover:bg-gray-100 cursor-pointer flex items-center space-x-2">
+        <i class="fas fa-language text-red-600"></i><span>Translate</span>
+      </div>
+      <div id="aiExplain" class="px-3 py-2 hover:bg-gray-100 cursor-pointer flex items-center space-x-2">
+        <i class="fas fa-lightbulb text-yellow-500"></i><span>Explain Text</span>
+      </div>
+    </div>
+  </div>
+
   <!-- Help -->
   <div class="relative">
     <div id="helpBtn" class="menu-button cursor-pointer hover:bg-gray-300 px-2 py-1 rounded flex items-center space-x-1">
@@ -150,7 +186,54 @@
   <div id="copyMessage" class="fixed top-2/3 left-1/2 transform -translate-x-1/2 -translate-y-1/2 
     bg-gray-500 text-white text-sm px-4 py-2 rounded-md shadow-lg hidden z-50">
     Copied to clipboard
+  </div>
+    <!-- AI Results Modal -->
+  <div id="aiModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50">
+    <div class="bg-white rounded-lg shadow-xl max-w-4xl w-full mx-4 max-h-[90vh] flex flex-col">
+      <!-- Modal Header -->
+      <div class="flex items-center justify-between p-4 border-b border-gray-200">
+        <h3 id="aiModalTitle" class="text-lg font-semibold text-gray-800">AI Assistant</h3>
+        <button id="closeAiModal" class="text-gray-400 hover:text-gray-600 text-xl">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      
+      <!-- Modal Content -->
+      <div class="flex-1 overflow-y-auto p-4">
+        <div id="aiLoadingSpinner" class="text-center py-8 hidden">
+          <i class="fas fa-spinner fa-spin text-2xl text-blue-600"></i>
+          <p class="mt-2 text-gray-600">AI is processing your request...</p>
+        </div>
+        
+        <div id="aiResults" class="space-y-4">
+          <!-- Original text section -->
+          <div id="aiOriginalSection" class="hidden">
+            <h4 class="font-semibold text-gray-700 mb-2">Original Text:</h4>
+            <div id="aiOriginalText" class="bg-gray-50 p-3 rounded border text-sm"></div>
+          </div>
+          
+          <!-- AI response section -->
+          <div id="aiResponseSection" class="hidden">
+            <h4 class="font-semibold text-gray-700 mb-2">AI Response:</h4>
+            <div id="aiResponseText" class="bg-blue-50 p-3 rounded border text-sm whitespace-pre-wrap"></div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Modal Footer -->
+      <div class="flex justify-end space-x-3 p-4 border-t border-gray-200">
+        <button id="aiCopyResult" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 hidden">
+          <i class="fas fa-copy mr-1"></i> Copy Result
+        </button>
+        <button id="aiReplaceText" class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 hidden">
+          <i class="fas fa-exchange-alt mr-1"></i> Replace Original
+        </button>
+        <button id="aiInsertText" class="px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700 hidden">
+          <i class="fas fa-plus mr-1"></i> Insert at Cursor
+        </button>
+      </div>
     </div>
+  </div>
 
   <!-- External JS -->
   <script src="editor.js"></script>
