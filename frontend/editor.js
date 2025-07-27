@@ -4,7 +4,7 @@ function toggleDropdown(btnId, dropdownId) {
   dropdown.classList.toggle('hidden');
 
   // Hide all others
-  ['fileDropdown', 'editDropdown', 'insertDropdown', 'viewDropdown', 'helpDropdown'].forEach(id => {
+  ['fileDropdown', 'editDropdown', 'insertDropdown', 'viewDropdown', 'aiDropdown', 'helpDropdown'].forEach(id => {
     if (id !== dropdownId) {
       document.getElementById(id).classList.add('hidden');
     }
@@ -28,6 +28,10 @@ document.getElementById('viewBtn').addEventListener('click', () => {
   toggleDropdown('viewBtn', 'viewDropdown');
 });
 
+document.getElementById('aiBtn').addEventListener('click', () => {
+  toggleDropdown('aiBtn', 'aiDropdown');
+});
+
 document.getElementById('helpBtn').addEventListener('click', () => {
   toggleDropdown('helpBtn', 'helpDropdown');
 });
@@ -36,14 +40,14 @@ document.getElementById('helpBtn').addEventListener('click', () => {
 // Close dropdowns when clicking outside
 document.addEventListener('click', (e) => {
   if (!e.target.closest('.menu-button') && !e.target.closest('.dropdown-menu')) {
-    ['fileDropdown', 'editDropdown', 'insertDropdown', 'viewDropdown', 'helpDropdown'].forEach(id => {
+    ['fileDropdown', 'editDropdown', 'insertDropdown', 'viewDropdown', 'aiDropdown', 'helpDropdown'].forEach(id => {
       document.getElementById(id).classList.add('hidden');
     });
   }
 });
 
 // Prevent dropdown from closing when clicked
-['fileBtn', 'editBtn', 'insertBtn', 'viewBtn', 'helpBtn'].forEach(id => {
+['fileBtn', 'editBtn', 'insertBtn', 'viewBtn', 'aiBtn', 'helpBtn'].forEach(id => {
   document.getElementById(id).addEventListener('click', (e) => {
     e.stopPropagation(); // ⛔ Stop event from bubbling to document click
   });
@@ -228,6 +232,321 @@ document.getElementById('fontFamilyDropdown').addEventListener('change', functio
 document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('textInput').style.fontFamily = 'Arial';
 });
+
+// ========== AI FUNCTIONALITY ==========
+
+const API_BASE_URL = 'http://localhost:3000';
+
+// AI Modal Management
+const aiModal = document.getElementById('aiModal');
+const aiModalTitle = document.getElementById('aiModalTitle');
+const aiLoadingSpinner = document.getElementById('aiLoadingSpinner');
+const aiResults = document.getElementById('aiResults');
+const aiOriginalSection = document.getElementById('aiOriginalSection');
+const aiOriginalText = document.getElementById('aiOriginalText');
+const aiResponseSection = document.getElementById('aiResponseSection');
+const aiResponseText = document.getElementById('aiResponseText');
+const closeAiModalBtn = document.getElementById('closeAiModal');
+const aiCopyResultBtn = document.getElementById('aiCopyResult');
+const aiReplaceTextBtn = document.getElementById('aiReplaceText');
+const aiInsertTextBtn = document.getElementById('aiInsertText');
+
+let currentAiResponse = '';
+let originalTextForReplacement = '';
+let selectionStart = 0;
+let selectionEnd = 0;
+
+// Show AI Modal
+function showAiModal(title) {
+  aiModalTitle.textContent = title;
+  aiModal.classList.remove('hidden');
+  showLoadingSpinner();
+}
+
+// Hide AI Modal
+function hideAiModal() {
+  aiModal.classList.add('hidden');
+  hideLoadingSpinner();
+  hideResults();
+}
+
+// Show loading spinner
+function showLoadingSpinner() {
+  aiLoadingSpinner.classList.remove('hidden');
+  aiResults.classList.add('hidden');
+}
+
+// Hide loading spinner
+function hideLoadingSpinner() {
+  aiLoadingSpinner.classList.add('hidden');
+  aiResults.classList.remove('hidden');
+}
+
+// Show results
+function showResults(originalText = '', responseText = '', showOriginal = true) {
+  currentAiResponse = responseText;
+  originalTextForReplacement = originalText;
+  
+  if (showOriginal && originalText) {
+    aiOriginalText.textContent = originalText;
+    aiOriginalSection.classList.remove('hidden');
+  } else {
+    aiOriginalSection.classList.add('hidden');
+  }
+  
+  aiResponseText.textContent = responseText;
+  aiResponseSection.classList.remove('hidden');
+  
+  // Show appropriate action buttons
+  aiCopyResultBtn.classList.remove('hidden');
+  if (originalText) {
+    aiReplaceTextBtn.classList.remove('hidden');
+  } else {
+    aiInsertTextBtn.classList.remove('hidden');
+  }
+}
+
+// Hide results
+function hideResults() {
+  aiOriginalSection.classList.add('hidden');
+  aiResponseSection.classList.add('hidden');
+  aiCopyResultBtn.classList.add('hidden');
+  aiReplaceTextBtn.classList.add('hidden');
+  aiInsertTextBtn.classList.add('hidden');
+}
+
+// Get selected text or all text
+function getTextForAI() {
+  const textInput = document.getElementById('textInput');
+  const selectedText = textInput.value.substring(textInput.selectionStart, textInput.selectionEnd);
+  
+  selectionStart = textInput.selectionStart;
+  selectionEnd = textInput.selectionEnd;
+  
+  if (selectedText.trim()) {
+    return selectedText;
+  }
+  
+  // If no selection, use all text
+  selectionStart = 0;
+  selectionEnd = textInput.value.length;
+  return textInput.value;
+}
+
+// Make API call to backend
+async function callAI(endpoint, data) {
+  try {
+    const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data)
+    });
+    
+    const result = await response.json();
+    
+    if (!response.ok) {
+      throw new Error(result.error || 'AI request failed');
+    }
+    
+    return result;
+  } catch (error) {
+    console.error('AI API Error:', error);
+    throw error;
+  }
+}
+
+// AI Generate Text
+async function aiGenerateText() {
+  showAiModal('AI Text Generation');
+  
+  const prompt = prompt('What would you like me to write about?');
+  if (!prompt) {
+    hideAiModal();
+    return;
+  }
+  
+  const context = document.getElementById('textInput').value;
+  
+  try {
+    const result = await callAI('/ai/generate', { prompt, context });
+    hideLoadingSpinner();
+    showResults('', result.generatedText, false);
+  } catch (error) {
+    hideLoadingSpinner();
+    alert('Failed to generate text: ' + error.message);
+    hideAiModal();
+  }
+}
+
+// AI Improve Text
+async function aiImproveText(improvementType = 'general') {
+  const text = getTextForAI();
+  
+  if (!text.trim()) {
+    alert('Please select some text or write something first.');
+    return;
+  }
+  
+  const titles = {
+    general: 'AI Text Improvement',
+    grammar: 'AI Grammar Correction',
+    professional: 'AI Professional Tone',
+    casual: 'AI Casual Tone',
+    clarity: 'AI Clarity Enhancement'
+  };
+  
+  showAiModal(titles[improvementType] || titles.general);
+  
+  try {
+    const result = await callAI('/ai/improve', { text, improvementType });
+    hideLoadingSpinner();
+    showResults(result.originalText, result.improvedText);
+  } catch (error) {
+    hideLoadingSpinner();
+    alert('Failed to improve text: ' + error.message);
+    hideAiModal();
+  }
+}
+
+// AI Summarize Text
+async function aiSummarizeText() {
+  const text = getTextForAI();
+  
+  if (!text.trim()) {
+    alert('Please select some text or write something first.');
+    return;
+  }
+  
+  showAiModal('AI Text Summarization');
+  
+  const summaryLength = prompt('Summary length (short/medium/long):', 'medium') || 'medium';
+  
+  try {
+    const result = await callAI('/ai/summarize', { text, summaryLength });
+    hideLoadingSpinner();
+    showResults(result.originalText, result.summary);
+  } catch (error) {
+    hideLoadingSpinner();
+    alert('Failed to summarize text: ' + error.message);
+    hideAiModal();
+  }
+}
+
+// AI Translate Text
+async function aiTranslateText() {
+  const text = getTextForAI();
+  
+  if (!text.trim()) {
+    alert('Please select some text or write something first.');
+    return;
+  }
+  
+  const targetLanguage = prompt('Translate to which language?', 'Spanish');
+  if (!targetLanguage) return;
+  
+  showAiModal('AI Text Translation');
+  
+  try {
+    const result = await callAI('/ai/translate', { text, targetLanguage });
+    hideLoadingSpinner();
+    showResults(result.originalText, result.translatedText);
+  } catch (error) {
+    hideLoadingSpinner();
+    alert('Failed to translate text: ' + error.message);
+    hideAiModal();
+  }
+}
+
+// AI Explain Text
+async function aiExplainText() {
+  const text = getTextForAI();
+  
+  if (!text.trim()) {
+    alert('Please select some text or write something first.');
+    return;
+  }
+  
+  showAiModal('AI Text Analysis');
+  
+  const analysisType = prompt('Analysis type (general/tone/keywords/structure):', 'general') || 'general';
+  
+  try {
+    const result = await callAI('/ai/explain', { text, analysisType });
+    hideLoadingSpinner();
+    showResults(result.originalText, result.analysis);
+  } catch (error) {
+    hideLoadingSpinner();
+    alert('Failed to analyze text: ' + error.message);
+    hideAiModal();
+  }
+}
+
+// Copy AI result to clipboard
+function copyAiResult() {
+  navigator.clipboard.writeText(currentAiResponse).then(() => {
+    showCopyMessage();
+  }).catch(err => {
+    console.error('Failed to copy text: ', err);
+  });
+}
+
+// Replace original text with AI result
+function replaceWithAiResult() {
+  const textInput = document.getElementById('textInput');
+  const currentText = textInput.value;
+  const newText = currentText.substring(0, selectionStart) + currentAiResponse + currentText.substring(selectionEnd);
+  
+  textInput.value = newText;
+  textInput.dispatchEvent(new Event('input')); // Update word/line count
+  hideAiModal();
+}
+
+// Insert AI result at cursor position
+function insertAiResult() {
+  const textInput = document.getElementById('textInput');
+  const cursorPos = textInput.selectionStart;
+  const currentText = textInput.value;
+  const newText = currentText.substring(0, cursorPos) + currentAiResponse + currentText.substring(cursorPos);
+  
+  textInput.value = newText;
+  textInput.setSelectionRange(cursorPos + currentAiResponse.length, cursorPos + currentAiResponse.length);
+  textInput.dispatchEvent(new Event('input')); // Update word/line count
+  hideAiModal();
+}
+
+// Event Listeners for AI Menu Items
+document.getElementById('aiGenerate').addEventListener('click', aiGenerateText);
+document.getElementById('aiImproveGeneral').addEventListener('click', () => aiImproveText('general'));
+document.getElementById('aiImproveGrammar').addEventListener('click', () => aiImproveText('grammar'));
+document.getElementById('aiImproveProfessional').addEventListener('click', () => aiImproveText('professional'));
+document.getElementById('aiImproveCasual').addEventListener('click', () => aiImproveText('casual'));
+document.getElementById('aiSummarize').addEventListener('click', aiSummarizeText);
+document.getElementById('aiTranslate').addEventListener('click', aiTranslateText);
+document.getElementById('aiExplain').addEventListener('click', aiExplainText);
+
+// Event Listeners for AI Modal
+closeAiModalBtn.addEventListener('click', hideAiModal);
+aiCopyResultBtn.addEventListener('click', copyAiResult);
+aiReplaceTextBtn.addEventListener('click', replaceWithAiResult);
+aiInsertTextBtn.addEventListener('click', insertAiResult);
+
+// Close modal when clicking outside
+aiModal.addEventListener('click', (e) => {
+  if (e.target === aiModal) {
+    hideAiModal();
+  }
+});
+
+// Show copy message
+function showCopyMessage() {
+  const copyMessage = document.getElementById('copyMessage');
+  copyMessage.classList.remove('hidden');
+  setTimeout(() => {
+    copyMessage.classList.add('hidden');
+  }, 2000);
+}
 
 
 
