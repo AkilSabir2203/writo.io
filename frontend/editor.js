@@ -1,3 +1,43 @@
+// ✅ Theme Management
+function initializeTheme() {
+  // Get saved theme from localStorage or default to light
+  const savedTheme = localStorage.getItem('theme') || 'light';
+  applyTheme(savedTheme);
+}
+
+function applyTheme(theme) {
+  const body = document.body;
+  const themeIcon = document.getElementById('themeIcon');
+  
+  if (theme === 'dark') {
+    body.setAttribute('data-theme', 'dark');
+    themeIcon.className = 'fas fa-sun'; // Sun icon for dark mode (to switch to light)
+  } else {
+    body.removeAttribute('data-theme');
+    themeIcon.className = 'fas fa-moon'; // Moon icon for light mode (to switch to dark)
+  }
+  
+  // Save theme preference
+  localStorage.setItem('theme', theme);
+}
+
+function toggleTheme() {
+  const currentTheme = document.body.getAttribute('data-theme');
+  const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+  applyTheme(newTheme);
+}
+
+// Initialize theme on page load
+document.addEventListener('DOMContentLoaded', initializeTheme);
+
+// Add event listener for theme toggle button
+document.addEventListener('DOMContentLoaded', () => {
+  const themeToggle = document.getElementById('themeToggle');
+  if (themeToggle) {
+    themeToggle.addEventListener('click', toggleTheme);
+  }
+});
+
 // ✅ Toggle Dropdowns
 function toggleDropdown(btnId, dropdownId) {
   const dropdown = document.getElementById(dropdownId);
@@ -357,28 +397,7 @@ async function callAI(endpoint, data) {
   }
 }
 
-// AI Generate Text
-async function aiGenerateText() {
-  showAiModal('AI Text Generation');
-  
-  const prompt = prompt('What would you like me to write about?');
-  if (!prompt) {
-    hideAiModal();
-    return;
-  }
-  
-  const context = document.getElementById('textInput').value;
-  
-  try {
-    const result = await callAI('/ai/generate', { prompt, context });
-    hideLoadingSpinner();
-    showResults('', result.generatedText, false);
-  } catch (error) {
-    hideLoadingSpinner();
-    alert('Failed to generate text: ' + error.message);
-    hideAiModal();
-  }
-}
+
 
 // AI Improve Text
 async function aiImproveText(improvementType = 'general') {
@@ -517,7 +536,6 @@ function insertAiResult() {
 }
 
 // Event Listeners for AI Menu Items
-document.getElementById('aiGenerate').addEventListener('click', aiGenerateText);
 document.getElementById('aiImproveGeneral').addEventListener('click', () => aiImproveText('general'));
 document.getElementById('aiImproveGrammar').addEventListener('click', () => aiImproveText('grammar'));
 document.getElementById('aiImproveProfessional').addEventListener('click', () => aiImproveText('professional'));
