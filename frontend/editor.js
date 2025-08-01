@@ -1,3 +1,43 @@
+// ✅ Theme Management
+function initializeTheme() {
+  // Get saved theme from localStorage or default to light
+  const savedTheme = localStorage.getItem('theme') || 'light';
+  applyTheme(savedTheme);
+}
+
+function applyTheme(theme) {
+  const body = document.body;
+  const themeIcon = document.getElementById('themeIcon');
+  
+  if (theme === 'dark') {
+    body.setAttribute('data-theme', 'dark');
+    themeIcon.className = 'fas fa-sun'; // Sun icon for dark mode (to switch to light)
+  } else {
+    body.removeAttribute('data-theme');
+    themeIcon.className = 'fas fa-moon'; // Moon icon for light mode (to switch to dark)
+  }
+  
+  // Save theme preference
+  localStorage.setItem('theme', theme);
+}
+
+function toggleTheme() {
+  const currentTheme = document.body.getAttribute('data-theme');
+  const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+  applyTheme(newTheme);
+}
+
+// Initialize theme on page load
+document.addEventListener('DOMContentLoaded', initializeTheme);
+
+// Add event listener for theme toggle button
+document.addEventListener('DOMContentLoaded', () => {
+  const themeToggle = document.getElementById('themeToggle');
+  if (themeToggle) {
+    themeToggle.addEventListener('click', toggleTheme);
+  }
+});
+
 // ✅ Toggle Dropdowns
 function toggleDropdown(btnId, dropdownId) {
   const dropdown = document.getElementById(dropdownId);
