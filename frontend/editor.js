@@ -38,6 +38,59 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 });
 
+// ✅ Fullscreen Functionality
+function toggleFullscreen() {
+  if (!document.fullscreenElement) {
+    // Enter fullscreen
+    document.documentElement.requestFullscreen().catch(err => {
+      console.error(`Error attempting to enable fullscreen: ${err.message}`);
+    });
+  } else {
+    // Exit fullscreen
+    document.exitFullscreen().catch(err => {
+      console.error(`Error attempting to exit fullscreen: ${err.message}`);
+    });
+  }
+}
+
+// Update fullscreen button text based on fullscreen state
+function updateFullscreenButton() {
+  const fullscreenBtn = document.getElementById('fullscreenBtn');
+  const fullscreenText = fullscreenBtn.querySelector('span:first-child');
+  
+  if (document.fullscreenElement) {
+    fullscreenText.textContent = 'Exit Fullscreen';
+  } else {
+    fullscreenText.textContent = 'Fullscreen';
+  }
+}
+
+// Add event listeners for fullscreen
+document.addEventListener('DOMContentLoaded', () => {
+  const fullscreenBtn = document.getElementById('fullscreenBtn');
+  if (fullscreenBtn) {
+    fullscreenBtn.addEventListener('click', () => {
+      toggleFullscreen();
+      // Close dropdown after clicking
+      document.getElementById('viewDropdown').classList.add('hidden');
+    });
+  }
+  
+  // Listen for fullscreen changes to update button text
+  document.addEventListener('fullscreenchange', updateFullscreenButton);
+  document.addEventListener('webkitfullscreenchange', updateFullscreenButton);
+  document.addEventListener('mozfullscreenchange', updateFullscreenButton);
+  document.addEventListener('MSFullscreenChange', updateFullscreenButton);
+});
+
+// Add keyboard shortcut for fullscreen (Ctrl+Shift+F)
+document.addEventListener('keydown', (e) => {
+  if (e.ctrlKey && e.shiftKey && e.key === 'F') {
+    e.preventDefault();
+    toggleFullscreen();
+  }
+});
+
 // ✅ Toggle Dropdowns
 function toggleDropdown(btnId, dropdownId) {
   const dropdown = document.getElementById(dropdownId);
