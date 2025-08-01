@@ -70,36 +70,7 @@ app.get('/note/:email', async (req, res) => {
 
 // ========== GEMINI AI ENDPOINTS ==========
 
-// Generate text continuation based on prompt
-app.post('/ai/generate', async (req, res) => {
-  try {
-    const { prompt, context = '' } = req.body;
-    
-    if (!prompt) {
-      return res.status(400).json({ error: 'Prompt is required' });
-    }
 
-    const fullPrompt = context 
-      ? `Based on this context: "${context}"\n\nContinue or expand on: ${prompt}`
-      : prompt;
-
-    const result = await model.generateContent(fullPrompt);
-    const response = await result.response;
-    const text = response.text();
-
-    res.json({ 
-      success: true, 
-      generatedText: text,
-      originalPrompt: prompt
-    });
-  } catch (error) {
-    console.error('AI Generation error:', error);
-    res.status(500).json({ 
-      error: 'Failed to generate content',
-      details: error.message 
-    });
-  }
-});
 
 // Improve/rewrite text
 app.post('/ai/improve', async (req, res) => {

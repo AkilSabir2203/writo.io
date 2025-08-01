@@ -357,28 +357,7 @@ async function callAI(endpoint, data) {
   }
 }
 
-// AI Generate Text
-async function aiGenerateText() {
-  showAiModal('AI Text Generation');
-  
-  const prompt = prompt('What would you like me to write about?');
-  if (!prompt) {
-    hideAiModal();
-    return;
-  }
-  
-  const context = document.getElementById('textInput').value;
-  
-  try {
-    const result = await callAI('/ai/generate', { prompt, context });
-    hideLoadingSpinner();
-    showResults('', result.generatedText, false);
-  } catch (error) {
-    hideLoadingSpinner();
-    alert('Failed to generate text: ' + error.message);
-    hideAiModal();
-  }
-}
+
 
 // AI Improve Text
 async function aiImproveText(improvementType = 'general') {
@@ -517,7 +496,6 @@ function insertAiResult() {
 }
 
 // Event Listeners for AI Menu Items
-document.getElementById('aiGenerate').addEventListener('click', aiGenerateText);
 document.getElementById('aiImproveGeneral').addEventListener('click', () => aiImproveText('general'));
 document.getElementById('aiImproveGrammar').addEventListener('click', () => aiImproveText('grammar'));
 document.getElementById('aiImproveProfessional').addEventListener('click', () => aiImproveText('professional'));
