@@ -6,111 +6,208 @@
   <title>WritePad</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://kit.fontawesome.com/e3f8c39ee9.js" crossorigin="anonymous"></script>
-</head>
-<body class="min-h-screen bg-gradient-to-t from-[#d7abc3] via-[#a597e4] to-[#43adfc]">
+  <style>
+    :root {
+      /* Light theme variables */
+      --bg-primary: #ffffff;
+      --bg-secondary: #f3f4f6;
+      --bg-tertiary: #e5e7eb;
+      --bg-gradient-from: #d7abc3;
+      --bg-gradient-via: #a597e4;
+      --bg-gradient-to: #43adfc;
+      --text-primary: #1f2937;
+      --text-secondary: #4b5563;
+      --text-muted: #9ca3af;
+      --border-color: #d1d5db;
+      --header-bg: #4b5563;
+      --header-text: #ffffff;
+      --hover-bg: #d1d5db;
+      --dropdown-bg: #ffffff;
+      --dropdown-hover: #f3f4f6;
+      --button-bg: #f9fafb;
+      --button-hover: #f3f4f6;
+      --input-bg: #ffffff;
+      --shadow: rgba(0, 0, 0, 0.1);
+    }
 
-  <div id="editor" class="min-h-screen border-gray-600 bg-white mt-28 ml-52 mr-52 rounded-lg flex flex-col">
+    [data-theme="dark"] {
+      /* Dark theme variables */
+      --bg-primary: #1f2937;
+      --bg-secondary: #374151;
+      --bg-tertiary: #4b5563;
+      --bg-gradient-from: #1f2937;
+      --bg-gradient-via: #374151;
+      --bg-gradient-to: #4b5563;
+      --text-primary: #f9fafb;
+      --text-secondary: #d1d5db;
+      --text-muted: #9ca3af;
+      --border-color: #4b5563;
+      --header-bg: #111827;
+      --header-text: #f9fafb;
+      --hover-bg: #4b5563;
+      --dropdown-bg: #374151;
+      --dropdown-hover: #4b5563;
+      --button-bg: #374151;
+      --button-hover: #4b5563;
+      --input-bg: #374151;
+      --shadow: rgba(0, 0, 0, 0.3);
+    }
+
+    /* Theme-aware classes */
+    .theme-bg-primary { background-color: var(--bg-primary); }
+    .theme-bg-secondary { background-color: var(--bg-secondary); }
+    .theme-bg-tertiary { background-color: var(--bg-tertiary); }
+    .theme-text-primary { color: var(--text-primary); }
+    .theme-text-secondary { color: var(--text-secondary); }
+    .theme-text-muted { color: var(--text-muted); }
+    .theme-border { border-color: var(--border-color); }
+    .theme-header-bg { background-color: var(--header-bg); }
+    .theme-header-text { color: var(--header-text); }
+    .theme-hover:hover { background-color: var(--hover-bg); }
+    .theme-dropdown-bg { background-color: var(--dropdown-bg); }
+    .theme-dropdown-hover:hover { background-color: var(--dropdown-hover); }
+    .theme-button-bg { background-color: var(--button-bg); }
+    .theme-button-hover:hover { background-color: var(--button-hover); }
+    .theme-input-bg { background-color: var(--input-bg); }
+    .theme-shadow { box-shadow: 0 4px 6px -1px var(--shadow); }
+
+    /* Body gradient background */
+    body {
+      background: linear-gradient(to top, var(--bg-gradient-from), var(--bg-gradient-via), var(--bg-gradient-to));
+    }
+
+    /* Theme toggle button styles */
+    .theme-toggle {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 1000;
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      border: 2px solid var(--border-color);
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      transition: all 0.3s ease;
+      box-shadow: 0 2px 10px var(--shadow);
+    }
+
+    .theme-toggle:hover {
+      transform: scale(1.1);
+      background-color: var(--hover-bg);
+    }
+  </style>
+</head>
+<body class="min-h-screen">
+
+  <!-- Theme Toggle Button -->
+  <button id="themeToggle" class="theme-toggle" title="Toggle Dark/Light Theme">
+    <i class="fas fa-moon" id="themeIcon"></i>
+  </button>
+
+  <div id="editor" class="min-h-screen theme-border theme-bg-primary mt-28 ml-52 mr-52 rounded-lg flex flex-col theme-shadow">
     <!-- 🔠 Header -->
-    <div id="header" class="flex justify-center font-bold bg-gray-600 text-white text-xl rounded-t-md pt-2 pb-2">
+    <div id="header" class="flex justify-center font-bold theme-header-bg theme-header-text text-xl rounded-t-md pt-2 pb-2">
       Editor
     </div>
 
 <!-- 🧭 Menu Bar -->
-<div id="menuBar" class="flex space-x-6 px-4 py-2 bg-gray-100 border-b border-gray-300 text-sm font-semibold text-gray-800">
+<div id="menuBar" class="flex space-x-6 px-4 py-2 theme-bg-secondary theme-border border-b text-sm font-semibold theme-text-primary">
   <!-- File -->
-  <div class="relative">
-    <div id="fileBtn" class="menu-button cursor-pointer hover:bg-gray-300 px-2 py-1 rounded flex items-center space-x-1">
-      <span>File</span>
-      <i class="fas fa-caret-down text-xs"></i>
-    </div>
-    <div id="fileDropdown" class="dropdown-menu absolute mt-1 bg-white border rounded shadow text-sm w-48 hidden z-50">
-      <div id="newDocBtn" class="px-3 py-2 hover:bg-gray-100 cursor-pointer flex items-center space-x-2"><i class="fas fa-file"></i><span>New document</span></div>
-      <div class="px-3 py-2 hover:bg-gray-100 cursor-pointer flex justify-between items-center">
-        <div class="flex items-center space-x-2"><i class="fas fa-save"></i><span>Save</span></div><span class="text-gray-400">Ctrl+S</span>
+      <div class="relative">
+      <div id="fileBtn" class="menu-button cursor-pointer theme-hover px-2 py-1 rounded flex items-center space-x-1">
+        <span>File</span>
+        <i class="fas fa-caret-down text-xs"></i>
       </div>
-      <div class="openFileBtn px-3 py-2 hover:bg-gray-100 cursor-pointer flex justify-between items-center">
-        <div class="flex items-center space-x-2"><i class="fas fa-folder-open"></i><span>Open...</span></div><span class="text-gray-400">Ctrl+O</span>
-      </div>
-      <div id="printBtn" class="px-3 py-2 hover:bg-gray-100 cursor-pointer flex justify-between items-center">
-        <div class="flex items-center space-x-2"><i class="fas fa-print"></i><span>Print</span></div><span class="text-gray-400">Ctrl+P</span>
-      </div>
+      <div id="fileDropdown" class="dropdown-menu absolute mt-1 theme-dropdown-bg theme-border border rounded shadow text-sm w-48 hidden z-50 theme-text-primary">
+              <div id="newDocBtn" class="px-3 py-2 theme-dropdown-hover cursor-pointer flex items-center space-x-2"><i class="fas fa-file"></i><span>New document</span></div>
+        <div class="px-3 py-2 theme-dropdown-hover cursor-pointer flex justify-between items-center">
+          <div class="flex items-center space-x-2"><i class="fas fa-save"></i><span>Save</span></div><span class="theme-text-muted">Ctrl+S</span>
+        </div>
+        <div class="openFileBtn px-3 py-2 theme-dropdown-hover cursor-pointer flex justify-between items-center">
+          <div class="flex items-center space-x-2"><i class="fas fa-folder-open"></i><span>Open...</span></div><span class="theme-text-muted">Ctrl+O</span>
+        </div>
+        <div id="printBtn" class="px-3 py-2 theme-dropdown-hover cursor-pointer flex justify-between items-center">
+          <div class="flex items-center space-x-2"><i class="fas fa-print"></i><span>Print</span></div><span class="theme-text-muted">Ctrl+P</span>
+        </div>
     </div>
   </div>
 
   <!-- Edit -->
   <div class="relative">
-    <div id="editBtn" class="menu-button cursor-pointer hover:bg-gray-300 px-2 py-1 rounded flex items-center space-x-1">
+    <div id="editBtn" class="menu-button cursor-pointer theme-hover px-2 py-1 rounded flex items-center space-x-1">
       <span>Edit</span>
       <i class="fas fa-caret-down text-xs"></i>
     </div>
-    <div id="editDropdown" class="dropdown-menu absolute mt-1 bg-white border rounded shadow text-sm w-52 hidden z-50">
-      <div id="undoBtn" class="px-3 py-2 hover:bg-gray-100 cursor-pointer flex items-center space-x-2"><i class="fas fa-undo"></i><span>Undo</span></div>
-      <div id="redoBtn" class="px-3 py-2 hover:bg-gray-100 cursor-pointer flex items-center space-x-2"><i class="fas fa-redo"></i><span>Redo</span></div>
-      <div id="cutBtn" class="px-3 py-2 hover:bg-gray-100 cursor-pointer flex items-center space-x-2"><i class="fas fa-cut"></i><span>Cut</span></div>
-      <div id="copyBtn" class="px-3 py-2 hover:bg-gray-100 cursor-pointer flex items-center space-x-2"><i class="fas fa-copy"></i><span>Copy</span></div>
-      <div class="px-3 py-2 hover:bg-gray-100 cursor-pointer flex items-center space-x-2"><i class="fas fa-paste"></i><span>Paste</span></div>
-      <div class="px-3 py-2 hover:bg-gray-100 cursor-pointer flex items-center space-x-2"><i class="fas fa-i-cursor"></i><span>Select All</span></div>
-      <div id="editFindReplace" class="px-3 py-2 hover:bg-gray-100 cursor-pointer flex items-center space-x-2"><i class="fas fa-search"></i><span>Find and Replace</span></div>
+    <div id="editDropdown" class="dropdown-menu absolute mt-1 theme-dropdown-bg theme-border border rounded shadow text-sm w-52 hidden z-50 theme-text-primary">
+      <div id="undoBtn" class="px-3 py-2 theme-dropdown-hover cursor-pointer flex items-center space-x-2"><i class="fas fa-undo"></i><span>Undo</span></div>
+      <div id="redoBtn" class="px-3 py-2 theme-dropdown-hover cursor-pointer flex items-center space-x-2"><i class="fas fa-redo"></i><span>Redo</span></div>
+      <div id="cutBtn" class="px-3 py-2 theme-dropdown-hover cursor-pointer flex items-center space-x-2"><i class="fas fa-cut"></i><span>Cut</span></div>
+      <div id="copyBtn" class="px-3 py-2 theme-dropdown-hover cursor-pointer flex items-center space-x-2"><i class="fas fa-copy"></i><span>Copy</span></div>
+      <div class="px-3 py-2 theme-dropdown-hover cursor-pointer flex items-center space-x-2"><i class="fas fa-paste"></i><span>Paste</span></div>
+      <div class="px-3 py-2 theme-dropdown-hover cursor-pointer flex items-center space-x-2"><i class="fas fa-i-cursor"></i><span>Select All</span></div>
+      <div id="editFindReplace" class="px-3 py-2 theme-dropdown-hover cursor-pointer flex items-center space-x-2"><i class="fas fa-search"></i><span>Find and Replace</span></div>
     </div>
   </div>
 
   <!-- Insert -->
   <div class="relative">
-    <div id="insertBtn" class="menu-button cursor-pointer hover:bg-gray-300 px-2 py-1 rounded flex items-center space-x-1">
+    <div id="insertBtn" class="menu-button cursor-pointer theme-hover px-2 py-1 rounded flex items-center space-x-1">
       <span>Insert</span>
       <i class="fas fa-caret-down text-xs"></i>
     </div>
-    <div id="insertDropdown" class="dropdown-menu absolute mt-1 bg-white border rounded shadow text-sm w-52 hidden z-50">
-      <div class="px-3 py-2 hover:bg-gray-100 cursor-pointer flex items-center space-x-2"><i class="fas fa-calendar-alt"></i><span>Date/Time</span></div>
-      <div class="px-3 py-2 hover:bg-gray-100 cursor-pointer flex items-center space-x-2"><i class="fas fa-asterisk"></i><span>Special Character</span></div>
+    <div id="insertDropdown" class="dropdown-menu absolute mt-1 theme-dropdown-bg theme-border border rounded shadow text-sm w-52 hidden z-50 theme-text-primary">
+      <div class="px-3 py-2 theme-dropdown-hover cursor-pointer flex items-center space-x-2"><i class="fas fa-calendar-alt"></i><span>Date/Time</span></div>
+      <div class="px-3 py-2 theme-dropdown-hover cursor-pointer flex items-center space-x-2"><i class="fas fa-asterisk"></i><span>Special Character</span></div>
     </div>
   </div>
 
   <!-- View -->
   <div class="relative">
-    <div id="viewBtn" class="menu-button cursor-pointer hover:bg-gray-300 px-2 py-1 rounded flex items-center space-x-1">
+    <div id="viewBtn" class="menu-button cursor-pointer theme-hover px-2 py-1 rounded flex items-center space-x-1">
       <span>View</span>
       <i class="fas fa-caret-down text-xs"></i>
     </div>
-    <div id="viewDropdown" class="dropdown-menu absolute mt-1 bg-white border rounded shadow text-sm w-52 hidden z-50">
-      <div class="px-3 py-2 hover:bg-gray-100 cursor-pointer flex justify-between items-center">
+    <div id="viewDropdown" class="dropdown-menu absolute mt-1 theme-dropdown-bg theme-border border rounded shadow text-sm w-52 hidden z-50 theme-text-primary">
+      <div class="px-3 py-2 theme-dropdown-hover cursor-pointer flex justify-between items-center">
         <span>Fullscreen</span>
-        <span class="text-gray-400 ml-auto">Ctrl+Shift+F</span>
+        <span class="theme-text-muted ml-auto">Ctrl+Shift+F</span>
       </div>
     </div>
   </div>
 
     <!-- AI Assistant -->
   <div class="relative">
-    <div id="aiBtn" class="menu-button cursor-pointer hover:bg-gray-300 px-2 py-1 rounded flex items-center space-x-1">
+    <div id="aiBtn" class="menu-button cursor-pointer theme-hover px-2 py-1 rounded flex items-center space-x-1">
       <span>AI Assistant</span>
       <i class="fas fa-caret-down text-xs"></i>
     </div>
-    <div id="aiDropdown" class="dropdown-menu absolute mt-1 bg-white border rounded shadow text-sm w-60 hidden z-50">
-      <div id="aiGenerate" class="px-3 py-2 hover:bg-gray-100 cursor-pointer flex items-center space-x-2">
-        <i class="fas fa-magic text-purple-600"></i><span>Generate Text</span>
-      </div>
-      <div class="border-t border-gray-200"></div>
-      <div id="aiImproveGeneral" class="px-3 py-2 hover:bg-gray-100 cursor-pointer flex items-center space-x-2">
+    <div id="aiDropdown" class="dropdown-menu absolute mt-1 theme-dropdown-bg theme-border border rounded shadow text-sm w-60 hidden z-50 theme-text-primary">
+      <div id="aiImproveGeneral" class="px-3 py-2 theme-dropdown-hover cursor-pointer flex items-center space-x-2">
         <i class="fas fa-edit text-blue-600"></i><span>Improve Text</span>
       </div>
-      <div id="aiImproveGrammar" class="px-3 py-2 hover:bg-gray-100 cursor-pointer flex items-center space-x-2">
+      <div id="aiImproveGrammar" class="px-3 py-2 theme-dropdown-hover cursor-pointer flex items-center space-x-2">
         <i class="fas fa-spell-check text-green-600"></i><span>Fix Grammar</span>
       </div>
-      <div id="aiImproveProfessional" class="px-3 py-2 hover:bg-gray-100 cursor-pointer flex items-center space-x-2">
+      <div id="aiImproveProfessional" class="px-3 py-2 theme-dropdown-hover cursor-pointer flex items-center space-x-2">
         <i class="fas fa-user-tie text-indigo-600"></i><span>Make Professional</span>
       </div>
-      <div id="aiImproveCasual" class="px-3 py-2 hover:bg-gray-100 cursor-pointer flex items-center space-x-2">
+      <div id="aiImproveCasual" class="px-3 py-2 theme-dropdown-hover cursor-pointer flex items-center space-x-2">
         <i class="fas fa-smile text-yellow-600"></i><span>Make Casual</span>
       </div>
-      <div class="border-t border-gray-200"></div>
-      <div id="aiSummarize" class="px-3 py-2 hover:bg-gray-100 cursor-pointer flex items-center space-x-2">
+      <div class="border-t theme-border"></div>
+      <div id="aiSummarize" class="px-3 py-2 theme-dropdown-hover cursor-pointer flex items-center space-x-2">
         <i class="fas fa-compress-alt text-orange-600"></i><span>Summarize</span>
       </div>
-      <div id="aiTranslate" class="px-3 py-2 hover:bg-gray-100 cursor-pointer flex items-center space-x-2">
+      <div id="aiTranslate" class="px-3 py-2 theme-dropdown-hover cursor-pointer flex items-center space-x-2">
         <i class="fas fa-language text-red-600"></i><span>Translate</span>
       </div>
-      <div id="aiExplain" class="px-3 py-2 hover:bg-gray-100 cursor-pointer flex items-center space-x-2">
+      <div id="aiExplain" class="px-3 py-2 theme-dropdown-hover cursor-pointer flex items-center space-x-2">
         <i class="fas fa-lightbulb text-yellow-500"></i><span>Explain Text</span>
       </div>
     </div>
@@ -118,13 +215,13 @@
 
   <!-- Help -->
   <div class="relative">
-    <div id="helpBtn" class="menu-button cursor-pointer hover:bg-gray-300 px-2 py-1 rounded flex items-center space-x-1">
+    <div id="helpBtn" class="menu-button cursor-pointer theme-hover px-2 py-1 rounded flex items-center space-x-1">
       <span>Help</span>
       <i class="fas fa-caret-down text-xs"></i>
     </div>
-    <div id="helpDropdown" class="dropdown-menu absolute mt-1 bg-white border rounded shadow text-sm w-52 hidden z-50">
-      <div class="px-3 py-2 hover:bg-gray-100 cursor-pointer flex items-center space-x-2"><i class="fas fa-keyboard"></i><span>Shortcuts</span></div>
-      <div class="px-3 py-2 hover:bg-gray-100 cursor-pointer flex items-center space-x-2"><i class="fas fa-home"></i><span>Homepage</span></div>
+    <div id="helpDropdown" class="dropdown-menu absolute mt-1 theme-dropdown-bg theme-border border rounded shadow text-sm w-52 hidden z-50 theme-text-primary">
+      <div class="px-3 py-2 theme-dropdown-hover cursor-pointer flex items-center space-x-2"><i class="fas fa-keyboard"></i><span>Shortcuts</span></div>
+      <div class="px-3 py-2 theme-dropdown-hover cursor-pointer flex items-center space-x-2"><i class="fas fa-home"></i><span>Homepage</span></div>
     </div>
   </div>
 </div>
@@ -133,22 +230,22 @@
 
 
         <!-- 🔧 Toolbar -->
-    <div id="icons" class="flex items-center bg-gray-100 border px-2 py-1 space-x-2 text-gray-700 text-sm">
-    <div id="toolbarNewDoc" class="px-3 py-1 rounded cursor-pointer hover:bg-gray-300 hover:text-gray-800 transition"><i class="fas fa-file"></i></div>
-    <div class="openFileBtn px-3 py-1 rounded cursor-pointer hover:bg-gray-300 hover:text-gray-800 transition"><i class="fas fa-folder-open"></i></div>
-    <div class="px-3 py-1 rounded cursor-pointer hover:bg-gray-300 hover:text-gray-800 transition"><i class="fas fa-save"></i></div>
-    <div id="toolbarPrint"class="px-3 py-1 rounded cursor-pointer hover:bg-gray-300 hover:text-gray-800 transition"><i class="fas fa-print"></i></div>
-    <div id="toolbarCut" class="px-3 py-1 rounded cursor-pointer hover:bg-gray-300 hover:text-gray-800 transition"><i class="fas fa-cut"></i></div>
-    <div id="toolbarCopy" class="px-3 py-1 rounded cursor-pointer hover:bg-gray-300 hover:text-gray-800 transition"><i class="fas fa-copy"></i></div>
-    <div id="toolbarUndo" class="px-3 py-1 rounded text-gray-500 cursor-pointer"><i class="fas fa-undo"></i></div>
-    <div id="toolbarRedo" class="px-3 py-1 rounded text-gray-500 cursor-pointer"><i class="fas fa-redo"></i></div>
-    <div class="border-l h-5 mx-2"></div>
-    <div id="findReplaceBtn" class="px-3 py-1 rounded cursor-pointer hover:bg-gray-300 hover:text-gray-800 transition"><i class="fas fa-search"></i></div>
+    <div id="icons" class="flex items-center theme-bg-secondary theme-border border px-2 py-1 space-x-2 theme-text-secondary text-sm">
+    <div id="toolbarNewDoc" class="px-3 py-1 rounded cursor-pointer theme-hover theme-text-primary transition"><i class="fas fa-file"></i></div>
+    <div class="openFileBtn px-3 py-1 rounded cursor-pointer theme-hover theme-text-primary transition"><i class="fas fa-folder-open"></i></div>
+    <div class="px-3 py-1 rounded cursor-pointer theme-hover theme-text-primary transition"><i class="fas fa-save"></i></div>
+    <div id="toolbarPrint" class="px-3 py-1 rounded cursor-pointer theme-hover theme-text-primary transition"><i class="fas fa-print"></i></div>
+    <div id="toolbarCut" class="px-3 py-1 rounded cursor-pointer theme-hover theme-text-primary transition"><i class="fas fa-cut"></i></div>
+    <div id="toolbarCopy" class="px-3 py-1 rounded cursor-pointer theme-hover theme-text-primary transition"><i class="fas fa-copy"></i></div>
+    <div id="toolbarUndo" class="px-3 py-1 rounded theme-text-muted cursor-pointer"><i class="fas fa-undo"></i></div>
+    <div id="toolbarRedo" class="px-3 py-1 rounded theme-text-muted cursor-pointer"><i class="fas fa-redo"></i></div>
+    <div class="border-l h-5 mx-2 theme-border"></div>
+    <div id="findReplaceBtn" class="px-3 py-1 rounded cursor-pointer theme-hover theme-text-primary transition"><i class="fas fa-search"></i></div>
     
     <!-- Font Family Dropdown -->
     <div class="flex items-center space-x-2 px-3 py-1">
-      <span class="text-sm text-gray-700">Font:</span>
-      <select id="fontFamilyDropdown" class="px-2 py-1 rounded border border-gray-300 bg-white text-sm text-gray-800 focus:outline-none">
+      <span class="text-sm theme-text-secondary">Font:</span>
+      <select id="fontFamilyDropdown" class="px-2 py-1 rounded theme-border border theme-input-bg text-sm theme-text-primary focus:outline-none">
         <option value="Arial" selected>Arial</option>
         <option value="'Times New Roman', serif">Times New Roman</option>
         <option value="Georgia, serif">Georgia</option>
@@ -160,21 +257,21 @@
       </select>
     </div>
 
-    <div class="flex items-center space-x-1 px-3 py-1 rounded cursor-pointer hover:bg-gray-300 hover:text-gray-800 transition">
+    <div class="flex items-center space-x-1 px-3 py-1 rounded cursor-pointer theme-hover theme-text-primary transition">
         <span>Font Size</span>
         <i class="fas fa-caret-down text-xs"></i>
     </div>
-    <div class="px-3 py-1 rounded cursor-pointer hover:bg-gray-300 hover:text-gray-800 transition"><i class="fas fa-expand-arrows-alt"></i></div>
+    <div class="px-3 py-1 rounded cursor-pointer theme-hover theme-text-primary transition"><i class="fas fa-expand-arrows-alt"></i></div>
     </div>
 
 
     <!-- 📝 Editable Area -->
     <textarea id="textInput"
-      class="flex-1 p-4 outline-none resize-none text-gray-800 text-base font-sans"
+      class="flex-1 p-4 outline-none resize-none theme-text-primary text-base font-sans theme-bg-primary"
       placeholder="Start typing your document here..."></textarea>
 
     <!-- 📊 Footer with word and line count -->
-    <div id="footer" class="h-10 flex items-center space-x-4 bg-gray-100 border-t border-gray-300 px-4 text-sm text-gray-700">
+    <div id="footer" class="h-10 flex items-center space-x-4 theme-bg-secondary theme-border border-t px-4 text-sm theme-text-secondary">
       <div id="lineCount">Lines: 0</div>
       <div id="wordCount">Words: 0</div>
     </div>
@@ -184,16 +281,16 @@
 
   </div>
   <div id="copyMessage" class="fixed top-2/3 left-1/2 transform -translate-x-1/2 -translate-y-1/2 
-    bg-gray-500 text-white text-sm px-4 py-2 rounded-md shadow-lg hidden z-50">
+    theme-bg-tertiary theme-text-primary text-sm px-4 py-2 rounded-md shadow-lg hidden z-50">
     Copied to clipboard
   </div>
     <!-- AI Results Modal -->
   <div id="aiModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50">
-    <div class="bg-white rounded-lg shadow-xl max-w-4xl w-full mx-4 max-h-[90vh] flex flex-col">
+    <div class="theme-bg-primary rounded-lg shadow-xl max-w-4xl w-full mx-4 max-h-[90vh] flex flex-col">
       <!-- Modal Header -->
-      <div class="flex items-center justify-between p-4 border-b border-gray-200">
-        <h3 id="aiModalTitle" class="text-lg font-semibold text-gray-800">AI Assistant</h3>
-        <button id="closeAiModal" class="text-gray-400 hover:text-gray-600 text-xl">
+      <div class="flex items-center justify-between p-4 border-b theme-border">
+        <h3 id="aiModalTitle" class="text-lg font-semibold theme-text-primary">AI Assistant</h3>
+        <button id="closeAiModal" class="theme-text-muted hover:theme-text-primary text-xl">
           <i class="fas fa-times"></i>
         </button>
       </div>
@@ -208,20 +305,20 @@
         <div id="aiResults" class="space-y-4">
           <!-- Original text section -->
           <div id="aiOriginalSection" class="hidden">
-            <h4 class="font-semibold text-gray-700 mb-2">Original Text:</h4>
-            <div id="aiOriginalText" class="bg-gray-50 p-3 rounded border text-sm"></div>
+            <h4 class="font-semibold theme-text-secondary mb-2">Original Text:</h4>
+            <div id="aiOriginalText" class="theme-bg-secondary p-3 rounded theme-border border text-sm theme-text-primary"></div>
           </div>
           
           <!-- AI response section -->
           <div id="aiResponseSection" class="hidden">
-            <h4 class="font-semibold text-gray-700 mb-2">AI Response:</h4>
-            <div id="aiResponseText" class="bg-blue-50 p-3 rounded border text-sm whitespace-pre-wrap"></div>
+            <h4 class="font-semibold theme-text-secondary mb-2">AI Response:</h4>
+            <div id="aiResponseText" class="theme-bg-tertiary p-3 rounded theme-border border text-sm whitespace-pre-wrap theme-text-primary"></div>
           </div>
         </div>
       </div>
       
       <!-- Modal Footer -->
-      <div class="flex justify-end space-x-3 p-4 border-t border-gray-200">
+      <div class="flex justify-end space-x-3 p-4 border-t theme-border">
         <button id="aiCopyResult" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 hidden">
           <i class="fas fa-copy mr-1"></i> Copy Result
         </button>
