@@ -547,3 +547,77 @@ function showCopyMessage() {
     copyMessage.classList.add('hidden');
   }, 2000);
 }
+
+// ========== FULLSCREEN FUNCTIONALITY ==========
+
+let isFullscreen = false;
+
+function toggleFullscreen() {
+  const editor = document.getElementById('editor');
+  const body = document.body;
+  
+  if (!isFullscreen) {
+    // Enter fullscreen mode
+    if (editor.requestFullscreen) {
+      editor.requestFullscreen();
+    } else if (editor.mozRequestFullScreen) {
+      editor.mozRequestFullScreen();
+    } else if (editor.webkitRequestFullscreen) {
+      editor.webkitRequestFullscreen();
+    } else if (editor.msRequestFullscreen) {
+      editor.msRequestFullscreen();
+    }
+    
+    // Apply fullscreen styles
+    editor.classList.add('fullscreen-mode');
+    body.classList.add('fullscreen-body');
+    isFullscreen = true;
+  } else {
+    // Exit fullscreen mode
+    if (document.exitFullscreen) {
+      document.exitFullscreen();
+    } else if (document.mozCancelFullScreen) {
+      document.mozCancelFullScreen();
+    } else if (document.webkitExitFullscreen) {
+      document.webkitExitFullscreen();
+    } else if (document.msExitFullscreen) {
+      document.msExitFullscreen();
+    }
+    
+    // Remove fullscreen styles
+    editor.classList.remove('fullscreen-mode');
+    body.classList.remove('fullscreen-body');
+    isFullscreen = false;
+  }
+}
+
+// Handle fullscreen change events (when user presses ESC or F11)
+function handleFullscreenChange() {
+  const isCurrentlyFullscreen = !!(document.fullscreenElement || document.mozFullScreenElement || document.webkitFullscreenElement || document.msFullscreenElement);
+  
+  if (!isCurrentlyFullscreen && isFullscreen) {
+    // User exited fullscreen (probably with ESC key)
+    const editor = document.getElementById('editor');
+    const body = document.body;
+    editor.classList.remove('fullscreen-mode');
+    body.classList.remove('fullscreen-body');
+    isFullscreen = false;
+  }
+}
+
+// Event listeners for fullscreen
+document.getElementById('fullscreenBtn').addEventListener('click', toggleFullscreen);
+
+// Listen for fullscreen change events
+document.addEventListener('fullscreenchange', handleFullscreenChange);
+document.addEventListener('mozfullscreenchange', handleFullscreenChange);
+document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
+document.addEventListener('msfullscreenchange', handleFullscreenChange);
+
+// Keyboard shortcut for fullscreen (Ctrl+Shift+F)
+document.addEventListener('keydown', (e) => {
+  if (e.ctrlKey && e.shiftKey && e.key === 'F') {
+    e.preventDefault();
+    toggleFullscreen();
+  }
+});

@@ -6,6 +6,30 @@
   <title>WritePad</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://kit.fontawesome.com/e3f8c39ee9.js" crossorigin="anonymous"></script>
+  <style>
+    /* Fullscreen mode styles */
+    .fullscreen-body {
+      margin: 0 !important;
+      padding: 0 !important;
+      background: white !important;
+    }
+    
+    .fullscreen-mode {
+      position: fixed !important;
+      top: 0 !important;
+      left: 0 !important;
+      width: 100vw !important;
+      height: 100vh !important;
+      margin: 0 !important;
+      border-radius: 0 !important;
+      z-index: 9999 !important;
+      background: white !important;
+    }
+    
+    .fullscreen-mode #textInput {
+      height: calc(100vh - 180px) !important; /* Adjust for header, menubar, toolbar, and footer */
+    }
+  </style>
 </head>
 <body class="min-h-screen bg-gradient-to-t from-[#d7abc3] via-[#a597e4] to-[#43adfc]">
 
@@ -73,7 +97,7 @@
       <i class="fas fa-caret-down text-xs"></i>
     </div>
     <div id="viewDropdown" class="dropdown-menu absolute mt-1 bg-white border rounded shadow text-sm w-52 hidden z-50">
-      <div class="px-3 py-2 hover:bg-gray-100 cursor-pointer flex justify-between items-center">
+      <div id="fullscreenBtn" class="px-3 py-2 hover:bg-gray-100 cursor-pointer flex justify-between items-center">
         <span>Fullscreen</span>
         <span class="text-gray-400 ml-auto">Ctrl+Shift+F</span>
       </div>
