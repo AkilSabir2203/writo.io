@@ -240,6 +240,33 @@ function printEditorContent() {
 document.getElementById('printBtn').addEventListener('click', printEditorContent);
 document.getElementById('toolbarPrint').addEventListener('click', printEditorContent);
 
+// ✅ Fullscreen functionality
+function toggleFullscreen() {
+  if (!document.fullscreenElement) {
+    // Enter fullscreen
+    document.documentElement.requestFullscreen().catch(err => {
+      console.error('Error attempting to enable fullscreen:', err);
+    });
+  } else {
+    // Exit fullscreen
+    document.exitFullscreen().catch(err => {
+      console.error('Error attempting to exit fullscreen:', err);
+    });
+  }
+}
+
+// Add event listeners for fullscreen
+document.getElementById('toolbarFullscreen').addEventListener('click', toggleFullscreen);
+document.getElementById('viewFullscreen').addEventListener('click', toggleFullscreen);
+
+// Add keyboard shortcut for Ctrl+Shift+F
+document.addEventListener('keydown', (event) => {
+  if (event.ctrlKey && event.shiftKey && event.key === 'F') {
+    event.preventDefault(); // Prevent browser's default find in files
+    toggleFullscreen();
+  }
+});
+
 function openFindReplaceDialog() {
   const findText = prompt('Enter the word to find:');
   if (!findText) return;
