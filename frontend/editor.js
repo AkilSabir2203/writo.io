@@ -400,16 +400,29 @@ function getTextForAI() {
   return textInput.value;
 }
 
-// Make API call to backend
+// Make authenticated API call to backend
 async function callAI(endpoint, data) {
   try {
+    const token = getToken();
+    if (!token) {
+      throw new Error('Authentication required');
+    }
+
     const response = await fetch(`${API_BASE_URL}${endpoint}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
       },
       body: JSON.stringify(data)
     });
+
+    // Handle authentication errors
+    if (response.status === 401 || response.status === 403) {
+      removeToken();
+      window.location.href = 'index.html';
+      return;
+    }
     
     const result = await response.json();
     
@@ -590,3 +603,89 @@ function showCopyMessage() {
     copyMessage.classList.add('hidden');
   }, 2000);
 }
+
+// ========== SAVE/LOAD FUNCTIONALITY ==========
+
+let autoSaveTimeout;
+const AUTO_SAVE_DELAY = 2000; // 2 seconds after user stops typing
+
+// Auto-save functionality
+function setupAutoSave() {
+  const textInput = document.getElementById('textInput');
+  
+  textInput.addEventListener('input', function() {
+    clearTimeout(autoSaveTimeout);
+    autoSaveTimeout = setTimeout(async function() {
+      await saveCurrentNote();
+    }, AUTO_SAVE_DELAY);
+  });
+}
+
+// Save current note
+async function saveCurrentNote() {
+  try {
+    const textInput = document.getElementById('textInput');
+    const content = textInput.value;
+    
+    const result = await saveNote(content);
+    
+    if (result.success) {
+      console.log('Note auto-saved successfully');
+      // Optionally show a subtle indicator that the note was saved
+      showSaveIndicator();
+    } else {
+      console.error('Failed to save note:', result.message);
+    }
+  } catch (error) {
+    console.error('Auto-save error:', error);
+  }
+}
+
+// Load user's note
+async function loadUserNote() {
+  try {
+    const result = await loadNote();
+    
+    if (result.success && result.content) {
+      const textInput = document.getElementById('textInput');
+      textInput.value = result.content;
+      
+      // Update word/character count
+      textInput.dispatchEvent(new Event('input'));
+      
+      console.log('Note loaded successfully');
+    }
+  } catch (error) {
+    console.error('Failed to load note:', error);
+  }
+}
+
+// Show save indicator
+function showSaveIndicator() {
+  // You can implement a subtle save indicator here
+  // For now, we'll just log it
+  console.log('Document saved');
+}
+
+// Manual save function (for Ctrl+S)
+async function manualSave() {
+  await saveCurrentNote();
+  showSaveIndicator();
+}
+
+// Add keyboard shortcut for Ctrl+S
+document.addEventListener('keydown', function(e) {
+  if (e.ctrlKey && e.key === 's') {
+    e.preventDefault();
+    manualSave();
+  }
+});
+
+// Initialize save/load functionality when page loads
+document.addEventListener('DOMContentLoaded', function() {
+  // Load user's existing note
+  loadUserNote();
+  
+  // Setup auto-save
+  setupAutoSave();
+});

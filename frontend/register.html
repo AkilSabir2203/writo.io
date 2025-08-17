@@ -34,22 +34,67 @@
         <!-- Heading -->
         <h2 class="font-playfair text-3xl text-center mb-2">Create Account</h2>
         <p class="text-sm text-gray-600 text-center mb-8">Fill in the details below to get started</p>
+
+        <!-- Message area -->
+        <div id="message" class="mb-4 text-center text-sm hidden"></div>
         
         <!-- Form -->
-        <form>
-            <input type="text" placeholder="Full Name" class="w-full border border-gray-300 rounded-lg px-4 py-3 text-sm mb-4 focus:outline-none focus:ring-2 focus:ring-black">
-            <input type="email" placeholder="Email Address" class="w-full border border-gray-300 rounded-lg px-4 py-3 text-sm mb-4 focus:outline-none focus:ring-2 focus:ring-black">
-            <input type="password" placeholder="Password" class="w-full border border-gray-300 rounded-lg px-4 py-3 text-sm mb-4 focus:outline-none focus:ring-2 focus:ring-black">
-            <input type="password" placeholder="Confirm Password" class="w-full border border-gray-300 rounded-lg px-4 py-3 text-sm mb-6 focus:outline-none focus:ring-2 focus:ring-black">
+        <form id="registerForm">
+            <input type="text" id="fullName" placeholder="Full Name" class="w-full border border-gray-300 rounded-lg px-4 py-3 text-sm mb-4 focus:outline-none focus:ring-2 focus:ring-black" required>
+            <input type="email" id="email" placeholder="Email Address" class="w-full border border-gray-300 rounded-lg px-4 py-3 text-sm mb-4 focus:outline-none focus:ring-2 focus:ring-black" required>
+            <input type="password" id="password" placeholder="Password" class="w-full border border-gray-300 rounded-lg px-4 py-3 text-sm mb-4 focus:outline-none focus:ring-2 focus:ring-black" required>
+            <input type="password" id="confirmPassword" placeholder="Confirm Password" class="w-full border border-gray-300 rounded-lg px-4 py-3 text-sm mb-6 focus:outline-none focus:ring-2 focus:ring-black" required>
             
-            <button type="submit" class="w-full bg-black text-white rounded-lg py-3 mb-4 hover:bg-gray-900">Sign Up</button>
+            <button type="submit" id="registerBtn" class="w-full bg-black text-white rounded-lg py-3 mb-4 hover:bg-gray-900 disabled:opacity-50">Sign Up</button>
         </form>
         
         <p class="text-center text-sm mt-6">
-            Already have an account? <a href="#" class="font-semibold hover:underline">Sign In</a>
+            Already have an account? <a href="index.html" class="font-semibold hover:underline">Sign In</a>
         </p>
     </div>
 </div>
+
+<script src="script.js"></script>
+<script>
+    document.getElementById('registerForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        const fullName = document.getElementById('fullName').value;
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+        const confirmPassword = document.getElementById('confirmPassword').value;
+        const messageEl = document.getElementById('message');
+        const registerBtn = document.getElementById('registerBtn');
+        
+        // Show loading state
+        registerBtn.disabled = true;
+        registerBtn.textContent = 'Creating Account...';
+        messageEl.className = 'mb-4 text-center text-sm hidden';
+
+        try {
+            const result = await register(email, password, confirmPassword);
+            
+            if (result.success) {
+                messageEl.textContent = result.message;
+                messageEl.className = 'mb-4 text-center text-sm text-green-600';
+                
+                // Redirect to editor after successful registration
+                setTimeout(() => {
+                    window.location.href = 'editor.html';
+                }, 1000);
+            } else {
+                messageEl.textContent = result.message;
+                messageEl.className = 'mb-4 text-center text-sm text-red-600';
+            }
+        } catch (error) {
+            messageEl.textContent = 'An error occurred during registration';
+            messageEl.className = 'mb-4 text-center text-sm text-red-600';
+        } finally {
+            registerBtn.disabled = false;
+            registerBtn.textContent = 'Sign Up';
+        }
+    });
+</script>
 
 </body>
 </html>
