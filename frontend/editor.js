@@ -302,7 +302,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // ========== AI FUNCTIONALITY ==========
 
-const API_BASE_URL = 'http://localhost:3000';
+const API_BASE_URL = '';
 
 // AI Modal Management
 const aiModal = document.getElementById('aiModal');

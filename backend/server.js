@@ -17,6 +17,7 @@ const Note = mongoose.model('Note', {
 const app = express();
 app.use(cors());
 app.use(express.json());
+app.use(express.static(path.join(__dirname, '..', 'frontend')));
 
 const MONGO_URI = process.env.MONGO_URI;
 const JWT_SECRET = process.env.JWT_SECRET;
@@ -64,6 +65,12 @@ const authenticateToken = (req, res, next) => {
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 const model = genAI.getGenerativeModel({
   model: process.env.GEMINI_MODEL || 'gemini-3.8-flash'
+});
+
+app.get('/health', (req, res) => {
+  res.status(mongoose.connection.readyState === 1 ? 200 : 503).json({
+    status: mongoose.connection.readyState === 1 ? 'ok' : 'not ready'
+  });
 });
 
 // Register
@@ -304,7 +311,7 @@ async function startServer() {
     console.log('✅ MongoDB connected');
 
     app.listen(PORT, () => {
-      console.log(`🚀 Server running at http://localhost:${PORT}`);
+      console.log(`🚀 Server running on port ${PORT}`);
     });
   } catch (error) {
     console.error('❌ MongoDB connection failed:', error.message);
