@@ -1,10 +1,12 @@
 const express = require('express');
 const mongoose = require('mongoose');
+const dns = require('dns');
+const path = require('path');
 const cors = require('cors');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const { GoogleGenerativeAI } = require('@google/generative-ai');
-require('dotenv').config();
+require('dotenv').config({ path: path.join(__dirname, '.env') });
 const User = require('./models/User');
 
 const Note = mongoose.model('Note', {
@@ -18,6 +20,27 @@ app.use(express.json());
 
 const MONGO_URI = process.env.MONGO_URI;
 const JWT_SECRET = process.env.JWT_SECRET;
+
+if (!MONGO_URI) {
+  throw new Error('MONGO_URI is not configured');
+}
+
+if (!JWT_SECRET) {
+  throw new Error('JWT_SECRET is not configured');
+}
+
+if (!process.env.GEMINI_API_KEY) {
+  throw new Error('GEMINI_API_KEY is not configured');
+}
+
+const mongoDnsServers = (process.env.MONGO_DNS_SERVERS || '')
+  .split(',')
+  .map(server => server.trim())
+  .filter(Boolean);
+
+if (mongoDnsServers.length > 0) {
+  dns.setServers(mongoDnsServers);
+}
 
 // JWT Middleware
 const authenticateToken = (req, res, next) => {
@@ -39,11 +62,9 @@ const authenticateToken = (req, res, next) => {
 
 // Initialize Gemini AI
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-
-mongoose.connect(MONGO_URI)
-  .then(() => console.log('✅ MongoDB connected'))
-  .catch(err => console.error('❌ MongoDB error:', err));
+const model = genAI.getGenerativeModel({
+  model: process.env.GEMINI_MODEL || 'gemini-3.8-flash'
+});
 
 // Register
 app.post('/register', async (req, res) => {
@@ -273,7 +294,28 @@ app.post('/ai/explain', authenticateToken, async (req, res) => {
   }
 });
 
-const PORT = 3000;
-app.listen(PORT, () => {
-  console.log(`🚀 Server running at http://localhost:${PORT}`);
-});
+const PORT = process.env.PORT || 3000;
+
+async function startServer() {
+  try {
+    await mongoose.connect(MONGO_URI, {
+      serverSelectionTimeoutMS: 10000
+    });
+    console.log('✅ MongoDB connected');
+
+    app.listen(PORT, () => {
+      console.log(`🚀 Server running at http://localhost:${PORT}`);
+    });
+  } catch (error) {
+    console.error('❌ MongoDB connection failed:', error.message);
+    if (error.code === 'ECONNREFUSED' && error.syscall === 'querySrv') {
+      console.error(
+        'Node could not reach its DNS resolver for the MongoDB SRV record. ' +
+        'Set MONGO_DNS_SERVERS=1.1.1.1,8.8.8.8 in backend/.env or fix the machine DNS settings.'
+      );
+    }
+    process.exitCode = 1;
+  }
+}
+
+startServer();

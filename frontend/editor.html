@@ -101,6 +101,20 @@
       transform: scale(1.1);
       background-color: var(--hover-bg);
     }
+
+    html {
+      height: 100%;
+      background: linear-gradient(to top, var(--bg-gradient-from), var(--bg-gradient-via), var(--bg-gradient-to));
+      overscroll-behavior-y: none; /* Stops the elastic bounce background bleed */
+    }
+
+    /* Body gradient background */
+    body {
+      min-height: 100%;
+      margin: 0;
+      background: linear-gradient(to top, var(--bg-gradient-from), var(--bg-gradient-via), var(--bg-gradient-to));
+      overscroll-behavior-y: none;
+    }
   </style>
 </head>
 <body class="min-h-screen">
